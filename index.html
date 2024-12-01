@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer xdd</title>
+    <title>League Timer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -123,23 +123,23 @@
     </div>
 
     <div id="timer-page" class="container hidden">
-        <div class="role" id="top-timers">
+        <div id="top-timers" class="role">
             <h2>Top</h2>
             <div class="buttons"></div>
         </div>
-        <div class="role" id="jungle-timers">
+        <div id="jungle-timers" class="role">
             <h2>Jungle</h2>
             <div class="buttons"></div>
         </div>
-        <div class="role" id="mid-timers">
+        <div id="mid-timers" class="role">
             <h2>Mid</h2>
             <div class="buttons"></div>
         </div>
-        <div class="role" id="adc-timers">
+        <div id="adc-timers" class="role">
             <h2>ADC</h2>
             <div class="buttons"></div>
         </div>
-        <div class="role" id="supp-timers">
+        <div id="supp-timers" class="role">
             <h2>Supp</h2>
             <div class="buttons"></div>
         </div>
@@ -157,7 +157,7 @@
             selectedSpells[roleName] = [];
 
             role.addEventListener('click', event => {
-                if (event.target.tagName === 'BUTTON' && !event.target.classList.contains('disabled')) {
+                if (event.target.tagName === 'BUTTON') {
                     const button = event.target;
                     const selected = selectedSpells[roleName];
 
@@ -167,16 +167,6 @@
                     } else if (selected.length < 2) {
                         button.classList.add('active');
                         selected.push(button);
-                    }
-
-                    if (selected.length === 2) {
-                        role.querySelectorAll('button').forEach(btn => {
-                            if (!btn.classList.contains('active')) {
-                                btn.classList.add('disabled');
-                            }
-                        });
-                    } else {
-                        role.querySelectorAll('button').forEach(btn => btn.classList.remove('disabled'));
                     }
 
                     if (Object.values(selectedSpells).every(spells => spells.length === 2)) {
