@@ -5,7 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>League Timer</title>
     <style>
-        /* Twój CSS */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #1e1e2e;
+            color: #fff;
+        }
+        .container {
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .role {
+            margin-bottom: 20px;
+        }
+        .role h2 {
+            margin-bottom: 10px;
+        }
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        button {
+            flex: 1 1 calc(50% - 10px);
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3a3a4f;
+            color: #fff;
+            cursor: pointer;
+            text-align: center;
+        }
+        button.active {
+            background-color: #f39c12;
+        }
+        button.disabled {
+            background-color: #666;
+            cursor: not-allowed;
+        }
+        .start {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #2ecc71;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -20,7 +79,7 @@
                 <button data-time="300">Flash (300s)</button>
             </div>
         </div>
-       <div class="role" data-role="jungle">
+        <div class="role" data-role="jungle">
             <h2>Jungle</h2>
             <div class="buttons">
                 <button data-time="240">Heal (240s)</button>
@@ -30,7 +89,7 @@
                 <button data-time="300">Flash (300s)</button>
             </div>
         </div>
-  <div class="role" data-role="mid">
+        <div class="role" data-role="mid">
             <h2>Mid</h2>
             <div class="buttons">
                 <button data-time="240">Heal (240s)</button>
@@ -40,7 +99,7 @@
                 <button data-time="300">Flash (300s)</button>
             </div>
         </div>
-  <div class="role" data-role="adc">
+        <div class="role" data-role="adc">
             <h2>ADC</h2>
             <div class="buttons">
                 <button data-time="240">Heal (240s)</button>
@@ -50,7 +109,7 @@
                 <button data-time="300">Flash (300s)</button>
             </div>
         </div>
-  <div class="role" data-role="supp">
+        <div class="role" data-role="supp">
             <h2>Supp</h2>
             <div class="buttons">
                 <button data-time="240">Heal (240s)</button>
@@ -64,30 +123,105 @@
     </div>
 
     <div id="timer-page" class="container hidden">
-        <div id="top-timers" class="role">
+        <div class="role" id="top-timers">
             <h2>Top</h2>
             <div class="buttons"></div>
         </div>
-        <div id="jungle-timers" class="role">
+        <div class="role" id="jungle-timers">
             <h2>Jungle</h2>
             <div class="buttons"></div>
         </div>
-        <div id="mid-timers" class="role">
+        <div class="role" id="mid-timers">
             <h2>Mid</h2>
             <div class="buttons"></div>
         </div>
-        <div id="adc-timers" class="role">
-            <h2>Adc</h2>
+        <div class="role" id="adc-timers">
+            <h2>ADC</h2>
             <div class="buttons"></div>
         </div>
-         <div id="supp-timers" class="role">
+        <div class="role" id="supp-timers">
             <h2>Supp</h2>
             <div class="buttons"></div>
         </div>
     </div>
 
     <script>
-        /* Twój JavaScript */
+        const selectionPage = document.getElementById('selection-page');
+        const timerPage = document.getElementById('timer-page');
+        const startButton = document.getElementById('start-button');
+
+        let selectedSpells = {};
+
+        document.querySelectorAll('.role').forEach(role => {
+            const roleName = role.getAttribute('data-role');
+            selectedSpells[roleName] = [];
+
+            role.addEventListener('click', event => {
+                if (event.target.tagName === 'BUTTON' && !event.target.classList.contains('disabled')) {
+                    const button = event.target;
+                    const selected = selectedSpells[roleName];
+
+                    if (button.classList.contains('active')) {
+                        button.classList.remove('active');
+                        selected.splice(selected.indexOf(button), 1);
+                    } else if (selected.length < 2) {
+                        button.classList.add('active');
+                        selected.push(button);
+                    }
+
+                    if (selected.length === 2) {
+                        role.querySelectorAll('button').forEach(btn => {
+                            if (!btn.classList.contains('active')) {
+                                btn.classList.add('disabled');
+                            }
+                        });
+                    } else {
+                        role.querySelectorAll('button').forEach(btn => btn.classList.remove('disabled'));
+                    }
+
+                    if (Object.values(selectedSpells).every(spells => spells.length === 2)) {
+                        startButton.classList.remove('hidden');
+                    } else {
+                        startButton.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        startButton.addEventListener('click', () => {
+            selectionPage.classList.add('hidden');
+            timerPage.classList.remove('hidden');
+
+            Object.entries(selectedSpells).forEach(([role, buttons]) => {
+                const timerDiv = document.getElementById(`${role}-timers`).querySelector('.buttons');
+                buttons.forEach(button => {
+                    const newButton = document.createElement('button');
+                    const time = parseInt(button.getAttribute('data-time'));
+                    newButton.textContent = `${time}s`;
+
+                    newButton.addEventListener('click', () => {
+                        if (newButton.dataset.running) return;
+
+                        newButton.dataset.running = true;
+                        let countdown = time;
+                        newButton.textContent = `${countdown}s`;
+
+                        const interval = setInterval(() => {
+                            countdown--;
+                            newButton.textContent = `${countdown}s`;
+
+                            if (countdown <= 0) {
+                                clearInterval(interval);
+                                newButton.textContent = `${time}s`;
+                                delete newButton.dataset.running;
+                            }
+                        }, 1000);
+                    });
+
+                    timerDiv.appendChild(newButton);
+                });
+            });
+        });
     </script>
 </body>
 </html>
