@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer</title>
+    <title>League Timer XD</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -244,40 +244,40 @@
 
                     timerDiv.appendChild(newButton);
                 });
-            });
-        });
 
-        // Dodanie nowych przycisków "Buty" i "Runa"
-        function addHasteButtons(role) {
-            const timerDiv = document.getElementById(`${role}-timers`).querySelector('.buttons');
-            
-            const hasteButtons = [
-                { name: "Buty", hasteValue: haste.boots },
-                { name: "Runa", hasteValue: haste.rune }
-            ];
+                // Dodanie przycisków "Buty" i "Runa"
+                const hasteButtonsDiv = document.createElement('div');
+                hasteButtonsDiv.classList.add('buttons');
+                const bootsButton = document.createElement('button');
+                bootsButton.textContent = "Buty";
+                const runeButton = document.createElement('button');
+                runeButton.textContent = "Runa";
 
-            hasteButtons.forEach(buttonData => {
-                const newButton = document.createElement('button');
-                newButton.textContent = `${buttonData.name}`;
-                newButton.addEventListener('click', () => {
-                    const spellButtons = timerDiv.querySelectorAll('button');
-                    spellButtons.forEach(spellButton => {
-                        if (!spellButton.dataset.running) {
-                            const originalTime = parseInt(spellButton.textContent);
-                            const adjustedTime = originalTime * (100 / (100 + buttonData.hasteValue));
-                            spellButton.textContent = `${Math.round(adjustedTime)}s`;
+                hasteButtonsDiv.appendChild(bootsButton);
+                hasteButtonsDiv.appendChild(runeButton);
+
+                timerDiv.appendChild(hasteButtonsDiv);
+
+                bootsButton.addEventListener('click', () => {
+                    updateSpellTimes(role, haste.boots);
+                });
+
+                runeButton.addEventListener('click', () => {
+                    updateSpellTimes(role, haste.rune);
+                });
+
+                function updateSpellTimes(role, hasteValue) {
+                    const roleTimers = document.getElementById(`${role}-timers`).querySelectorAll('.buttons button');
+                    roleTimers.forEach(button => {
+                        if (!button.dataset.running) {
+                            const originalTime = parseInt(button.textContent);
+                            const adjustedTime = originalTime * (100 / (100 + hasteValue));
+                            button.textContent = `${Math.round(adjustedTime)}s`;
                         }
                     });
-                });
-                timerDiv.appendChild(newButton);
+                }
             });
-        }
-
-        // Wywołanie funkcji dodania przycisków "Buty" i "Runa"
-        Object.keys(selectedSpells).forEach(role => {
-            addHasteButtons(role);
         });
-
     </script>
 </body>
 </html>
