@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer XD</title>
+    <title>League Timer 2</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -163,8 +163,8 @@
         };
 
         let haste = {
-            boots: 10,
-            rune: 18
+            boots: 10, // Haste for boots
+            rune: 18  // Haste for rune
         };
 
         // Funkcja sprawdzająca, czy przycisk Start powinien być widoczny
@@ -205,10 +205,12 @@
             Object.entries(selectedSpells).forEach(([role, buttons]) => {
                 const timerDiv = document.getElementById(`${role}-timers`).querySelector('.buttons');
                 buttons.forEach(button => {
+                    const originalTime = parseInt(button.getAttribute('data-time'));
+                    let time = originalTime;
                     const newButton = document.createElement('button');
-                    const time = parseInt(button.getAttribute('data-time'));
                     newButton.textContent = `${time}s`;
 
+                    // Ustawienie startowego timera
                     newButton.addEventListener('click', () => {
                         if (newButton.dataset.running) return;
 
@@ -216,7 +218,6 @@
                         let countdown = time;
                         newButton.textContent = `${countdown}s`;
 
-                        // Funkcja zmiany koloru przycisku
                         newButton.classList.add('active');
 
                         const interval = setInterval(() => {
@@ -277,6 +278,7 @@
                             const originalTime = parseInt(button.textContent);
                             const adjustedTime = originalTime * (100 / (100 + hasteValue));
                             button.textContent = `${Math.round(adjustedTime)}s`;
+                            button.dataset.adjustedTime = adjustedTime; // Zapisanie nowego czasu
                         }
                     });
                 }
