@@ -35,7 +35,7 @@
             gap: 10px;
         }
         button {
-            flex: 1 1 calc(50% - 10px);
+            flex: 1 1 calc(33% - 10px);
             padding: 10px;
             border: none;
             border-radius: 5px;
@@ -162,6 +162,11 @@
             supp: []
         };
 
+        let haste = {
+            boots: 10,
+            rune: 18
+        };
+
         // Funkcja sprawdzająca, czy przycisk Start powinien być widoczny
         function updateStartButtonVisibility() {
             const allSelected = Object.values(selectedSpells).every(spells => spells.length === 2);
@@ -211,6 +216,9 @@
                         let countdown = time;
                         newButton.textContent = `${countdown}s`;
 
+                        // Funkcja zmiany koloru przycisku
+                        newButton.classList.add('active');
+
                         const interval = setInterval(() => {
                             countdown--;
                             newButton.textContent = `${countdown}s`;
@@ -219,14 +227,57 @@
                                 clearInterval(interval);
                                 newButton.textContent = `${time}s`;
                                 delete newButton.dataset.running;
+                                newButton.classList.remove('active');
+                                newButton.classList.add('disabled');
                             }
                         }, 1000);
+
+                        // Resetowanie timera
+                        newButton.addEventListener('dblclick', () => {
+                            clearInterval(interval);
+                            newButton.textContent = `${time}s`;
+                            delete newButton.dataset.running;
+                            newButton.classList.remove('active');
+                            newButton.classList.remove('disabled');
+                        });
                     });
 
                     timerDiv.appendChild(newButton);
                 });
             });
         });
+
+        // Dodanie nowych przycisków "Buty" i "Runa"
+        function addHasteButtons(role) {
+            const timerDiv = document.getElementById(`${role}-timers`).querySelector('.buttons');
+            
+            const hasteButtons = [
+                { name: "Buty", hasteValue: haste.boots },
+                { name: "Runa", hasteValue: haste.rune }
+            ];
+
+            hasteButtons.forEach(buttonData => {
+                const newButton = document.createElement('button');
+                newButton.textContent = `${buttonData.name}`;
+                newButton.addEventListener('click', () => {
+                    const spellButtons = timerDiv.querySelectorAll('button');
+                    spellButtons.forEach(spellButton => {
+                        if (!spellButton.dataset.running) {
+                            const originalTime = parseInt(spellButton.textContent);
+                            const adjustedTime = originalTime * (100 / (100 + buttonData.hasteValue));
+                            spellButton.textContent = `${Math.round(adjustedTime)}s`;
+                        }
+                    });
+                });
+                timerDiv.appendChild(newButton);
+            });
+        }
+
+        // Wywołanie funkcji dodania przycisków "Buty" i "Runa"
+        Object.keys(selectedSpells).forEach(role => {
+            addHasteButtons(role);
+        });
+
     </script>
 </body>
 </html>
