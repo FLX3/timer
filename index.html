@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer sas</title>
+    <title>League Timer ta</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -154,6 +154,15 @@
 
         let selectedSpells = {};
 
+        function updateStartButtonVisibility() {
+            const allSelected = Object.values(selectedSpells).every(spells => spells.length === 2);
+            if (allSelected) {
+                startButton.classList.remove('hidden');
+            } else {
+                startButton.classList.add('hidden');
+            }
+        }
+
         document.querySelectorAll('.role').forEach(role => {
             const roleName = role.getAttribute('data-role');
             selectedSpells[roleName] = [];
@@ -171,11 +180,7 @@
                         selected.push(button);
                     }
 
-                    if (Object.values(selectedSpells).every(spells => spells.length === 2)) {
-                        startButton.classList.remove('hidden');
-                    } else {
-                        startButton.classList.add('hidden');
-                    }
+                    updateStartButtonVisibility();
                 }
             });
         });
