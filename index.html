@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer ta</title>
+    <title>League Timer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,6 +70,7 @@
     </style>
 </head>
 <body>
+    <!-- Pierwsza strona - wybór spellów -->
     <div id="selection-page" class="container">
         <div class="role" data-role="top">
             <h2>Top</h2>
@@ -124,6 +125,7 @@
         <button id="start-button" class="start hidden">Start</button>
     </div>
 
+    <!-- Druga strona - wyświetlanie wybranych spellów i odliczanie -->
     <div id="timer-page" class="container hidden">
         <div id="top-timers" class="role">
             <h2>Top</h2>
@@ -152,8 +154,15 @@
         const timerPage = document.getElementById('timer-page');
         const startButton = document.getElementById('start-button');
 
-        let selectedSpells = {};
+        let selectedSpells = {
+            top: [],
+            jungle: [],
+            mid: [],
+            adc: [],
+            supp: []
+        };
 
+        // Funkcja sprawdzająca, czy przycisk Start powinien być widoczny
         function updateStartButtonVisibility() {
             const allSelected = Object.values(selectedSpells).every(spells => spells.length === 2);
             if (allSelected) {
@@ -163,13 +172,11 @@
             }
         }
 
+        // Dodawanie klas 'active' i dodawanie spellów do listy po kliknięciu
         document.querySelectorAll('.role').forEach(role => {
             const roleName = role.getAttribute('data-role');
-            selectedSpells[roleName] = [];
-
-            role.addEventListener('click', event => {
-                if (event.target.tagName === 'BUTTON') {
-                    const button = event.target;
+            role.querySelectorAll('button').forEach(button => {
+                button.addEventListener('click', () => {
                     const selected = selectedSpells[roleName];
 
                     if (button.classList.contains('active')) {
@@ -181,10 +188,11 @@
                     }
 
                     updateStartButtonVisibility();
-                }
+                });
             });
         });
 
+        // Obsługa przycisku Start
         startButton.addEventListener('click', () => {
             selectionPage.classList.add('hidden');
             timerPage.classList.remove('hidden');
