@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>League Timer</title>
+    <title>League Timer XD</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -205,15 +205,15 @@
             Object.entries(selectedSpells).forEach(([role, buttons]) => {
                 const timerDiv = document.getElementById(`${role}-timers`).querySelector('.buttons');
                 buttons.forEach(button => {
-                    const originalTime = parseInt(button.getAttribute('data-time'));
                     const newButton = document.createElement('button');
-                    newButton.textContent = `${originalTime}s`;
+                    const time = parseInt(button.getAttribute('data-time'));
+                    newButton.textContent = `${time}s`;
 
                     newButton.addEventListener('click', () => {
                         if (newButton.dataset.running) return;
 
                         newButton.dataset.running = true;
-                        let countdown = originalTime;
+                        let countdown = time;
                         newButton.textContent = `${countdown}s`;
 
                         // Funkcja zmiany koloru przycisku
@@ -225,51 +225,61 @@
 
                             if (countdown <= 0) {
                                 clearInterval(interval);
-                                newButton.textContent = `${originalTime}s`;
+                                newButton.textContent = `${time}s`;
                                 delete newButton.dataset.running;
                                 newButton.classList.remove('active');
                                 newButton.classList.add('disabled');
                             }
                         }, 1000);
-                    });
 
-                    // Dodanie przycisków "Buty" i "Runa"
-                    const hasteButtonsDiv = document.createElement('div');
-                    hasteButtonsDiv.classList.add('buttons');
-                    const bootsButton = document.createElement('button');
-                    bootsButton.textContent = "Buty";
-                    const runeButton = document.createElement('button');
-                    runeButton.textContent = "Runa";
-
-                    hasteButtonsDiv.appendChild(bootsButton);
-                    hasteButtonsDiv.appendChild(runeButton);
-
-                    timerDiv.appendChild(hasteButtonsDiv);
-
-                    let activeHaste = 0; // Początkowy brak haste
-
-                    bootsButton.addEventListener('click', () => {
-                        activeHaste = activeHaste === haste.boots ? 0 : haste.boots;
-                        updateSpellTimes(role, activeHaste);
-                    });
-
-                    runeButton.addEventListener('click', () => {
-                        activeHaste = activeHaste === haste.rune ? 0 : haste.rune;
-                        updateSpellTimes(role, activeHaste);
-                    });
-
-                    // Funkcja do aktualizacji czasów spellów
-                    function updateSpellTimes(role, hasteValue) {
-                        const roleTimers = document.getElementById(`${role}-timers`).querySelectorAll('.buttons button');
-                        roleTimers.forEach(button => {
-                            if (!button.dataset.running) {
-                                const originalTime = parseInt(button.textContent);
-                                const adjustedTime = originalTime * (100 / (100 + hasteValue));
-                                button.textContent = `${Math.round(adjustedTime)}s`;
-                            }
+                        // Resetowanie timera
+                        newButton.addEventListener('dblclick', () => {
+                            clearInterval(interval);
+                            newButton.textContent = `${time}s`;
+                            delete newButton.dataset.running;
+                            newButton.classList.remove('active');
+                            newButton.classList.remove('disabled');
                         });
-                    }
+                    });
+
+                    timerDiv.appendChild(newButton);
                 });
+
+                // Dodanie przycisków "Buty" i "Runa"
+                const hasteButtonsDiv = document.createElement('div');
+                hasteButtonsDiv.classList.add('buttons');
+                const bootsButton = document.createElement('button');
+                bootsButton.textContent = "Buty";
+                const runeButton = document.createElement('button');
+                runeButton.textContent = "Runa";
+
+                hasteButtonsDiv.appendChild(bootsButton);
+                hasteButtonsDiv.appendChild(runeButton);
+
+                timerDiv.appendChild(hasteButtonsDiv);
+
+                let activeHaste = 0;
+
+                bootsButton.addEventListener('click', () => {
+                    activeHaste = activeHaste === haste.boots ? 0 : haste.boots;
+                    updateSpellTimes(role, activeHaste);
+                });
+
+                runeButton.addEventListener('click', () => {
+                    activeHaste = activeHaste === haste.rune ? 0 : haste.rune;
+                    updateSpellTimes(role, activeHaste);
+                });
+
+                function updateSpellTimes(role, hasteValue) {
+                    const roleTimers = document.getElementById(`${role}-timers`).querySelectorAll('.buttons button');
+                    roleTimers.forEach(button => {
+                        if (!button.dataset.running) {
+                            const originalTime = parseInt(button.textContent);
+                            const adjustedTime = originalTime * (100 / (100 + hasteValue));
+                            button.textContent = `${Math.round(adjustedTime)}s`;
+                        }
+                    });
+                }
             });
         });
     </script>
